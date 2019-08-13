@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ffmpeg -i "rtmp://localhost:1935/live/01" -i "rtmp://localhost:1935/live/02" -i "rtmp://localhost:1935/live/03" -filter_complex "[0:v]scale=-1:480[img0];[1:v]scale=-1:200[img1];[2:v]scale=-1:200[img2];[img0][img1]overlay=main_w-overlay_w-5:main_h-overlay_h-250[bkg];[bkg][img2]overlay=main_w-overlay_w-5:main_h-overlay_h-30" -filter_complex "[0:a]aformat=sample_fmts=fltp:channel_layouts=stereo,volume=0.5[a0]; [1:a]aformat=sample_fmts=fltp:channel_layouts=stereo,volume=1,adelay=5000|5000|5000[a1];[2:a]aformat=sample_fmts=fltp:channel_layouts=stereo,volume=1,adelay=5000|5000|5000[a2]; [a0][a1][a2]amix=inputs=3:duration=first[aout]" -map [aout] -ac 2 -map 0:v:0 -ar 44100 -b:v 2400k -f flv "rtmp://localhost:1935/live/06"
